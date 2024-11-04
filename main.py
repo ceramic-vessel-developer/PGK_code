@@ -48,9 +48,9 @@ class Player(pygame.sprite.Sprite):
 
         # Update the player's position in the larger map
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_LEFT] and self.rect.x >= 5:
             self.rect.x -= 5
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_RIGHT] and self.rect.x <= SCREEN_WIDTH - 55:
             self.rect.x += 5
         if keys[pygame.K_SPACE] and self.on_ground:  # Allow jumping only when on the ground
             self.velocity_y -= JUMP_STRENGTH
@@ -130,8 +130,8 @@ while True:
     screen.fill(WHITE)
 
     # Shift the ground sections according to the camera position
-    ground_left.rect.x = 0 - camera_x
-    ground_right.rect.x = (MAP_WIDTH + GAP_WIDTH) // 2 - camera_x
+    ground_left.rect.x = 0 - camera_x - SCREEN_WIDTH//2 + 50
+    ground_right.rect.x = (MAP_WIDTH + GAP_WIDTH) // 2 - camera_x - SCREEN_WIDTH//2
 
     # Create a sprite group and add all elements to draw
     all_sprites = pygame.sprite.Group(player, ground_left, ground_right)
