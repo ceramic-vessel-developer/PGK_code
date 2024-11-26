@@ -59,10 +59,10 @@ class World:
 					lucky_block = LuckyBlock((x, y), tile_size)
 					self.lucky_blocks.add(lucky_block)
 				elif cell == "k":
-					koopa = Koopa((x, y), tile_size)
+					koopa = Koopa((x, y), tile_size*0.8)
 					self.koopas.add(koopa)
-				elif cell == "G":
-					goomba = Goomba((x, y), tile_size)
+				elif cell == "o":
+					goomba = Goomba((x, y), tile_size*0.8)
 					self.goombas.add(goomba)
 
 	# world scroll when the player is walking towards left/right
@@ -254,15 +254,105 @@ class World:
 			if sprite.rect.colliderect(player.rect):
 				player.eat_mushroom()
 				sprite.kill()
+	def _handle_shell_collision(self):
+		for koopa in self.koopas.sprites():
+			if koopa.stage == 2:
+				for goomba in self.goombas.sprites():
+					if goomba.rect.colliderect(koopa.rect):
+						goomba.kill()
+
 
 	def _handle_vertical_collision_with_enemies(self):
-		pass
+		immune = False
+		player = self.player.sprite
+		for sprite in self.goombas.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					# player.rect.bottom = sprite.rect.top
+					# player.direction.y = 0
+					# player.on_ground = True
+					sprite.kill()
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					if player.direction.x <= 0 and sprite.direction.x >= 0:
+						player.rect.x += tile_size
+					elif player.direction.x >= 0 and sprite.direction.x <= 0:
+						player.rect.x -= tile_size
+					player.hit()
+
+		for sprite in self.koopas.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					# player.rect.bottom = sprite.rect.top
+					# player.direction.y = 0
+					# player.on_ground = True
+					sprite.hit()
+					immune = True
+					player._jump()
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					if player.direction.x <= 0 and sprite.direction.x >= 0:
+						player.rect.x += tile_size
+					elif player.direction.x >= 0 and sprite.direction.x <= 0:
+						player.rect.x -= tile_size
+					player.hit()
+		return immune
+		# if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+		# 	player.on_ground = False
+		# if player.on_ceiling and player.direction.y > 0:
+		# 	player.on_ceiling = False
 
 	def _handle_horizontal_collision_with_enemies(self):
-		pass
+		player = self.player.sprite
+
+		for sprite in self.goombas.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+
+				if player.direction.x <= 0 and sprite.direction.x >= 0:
+					player.rect.x += tile_size
+				elif player.direction.x >= 0 and sprite.direction.x <= 0:
+					player.rect.x -= tile_size
+				player.hit()
+				# if player.direction.x < 0:
+				# 	player.rect.left = sprite.rect.right
+				# 	player.on_left = True
+				# 	self.current_x = player.rect.left
+				# # checks if moving towards right
+				# elif player.direction.x > 0:
+				# 	player.rect.right = sprite.rect.left
+				# 	player.on_right = True
+				# 	self.current_x = player.rect.right
+
+		for sprite in self.koopas.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+
+				if player.direction.x <= 0 and sprite.direction.x >= 0:
+					player.rect.x += tile_size
+				elif player.direction.x >= 0 and sprite.direction.x <= 0:
+					player.rect.x -= tile_size
+				player.hit()
+			# if player.direction.x < 0:
+			# 	player.rect.left = sprite.rect.right
+			# 	player.on_left = True
+			# 	self.current_x = player.rect.left
+			# # checks if moving towards right
+			# elif player.direction.x > 0:
+			# 	player.rect.right = sprite.rect.left
+			# 	player.on_right = True
+			# 	self.current_x = player.rect.right
+		# if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+		# 	player.on_left = False
+		# if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+		# 	player.on_right = False
 
 	def _handle_collisions_with_enemies(self):
-		self._handle_vertical_collision_with_enemies()
+		immune = self._handle_vertical_collision_with_enemies()
+		if immune:
+			return
 		self._handle_horizontal_collision_with_enemies()
 
 	# updating the game world from all changes commited
@@ -291,20 +381,37 @@ class World:
 		self.lucky_blocks.update(self.world_shift)
 		self.lucky_blocks.draw(self.screen)
 
+		# for koopas
+		self.koopas.update(self.world_shift)
+		self.koopas.draw(self.screen)
+
+		# for goombas
+		self.goombas.update(self.world_shift)
+		self.goombas.draw(self.screen)
+
+
 		self._scroll_x()
 
 		# for player
 		self._horizontal_movement_collision()
 		self._vertical_movement_collision()
+		self._handle_collisions_with_enemies()
 		self._handle_traps()
 		self._handle_coins()
 		self._handle_power_ups()
+		self._handle_shell_collision()
 		self.player.update(player_event)
 		self.game.show_life(self.player.sprite)
 		self.player.draw(self.screen)
 
 		# for npcs
 		for sprite in self.power_ups.sprites():
+			self._horizontal_npc_movement_collision(sprite)
+			self._vertical_npc_movement_collision(sprite)
+		for sprite in self.goombas.sprites():
+			self._horizontal_npc_movement_collision(sprite)
+			self._vertical_npc_movement_collision(sprite)
+		for sprite in self.koopas.sprites():
 			self._horizontal_npc_movement_collision(sprite)
 			self._vertical_npc_movement_collision(sprite)
 
