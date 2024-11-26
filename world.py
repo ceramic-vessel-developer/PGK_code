@@ -2,6 +2,8 @@ import pygame
 
 from LuckyBlock import LuckyBlock
 from coin import Coin
+from goomba import Goomba
+from koopa import Koopa
 from power_up import PowerUp
 from settings import tile_size, WIDTH
 from tile import Tile
@@ -29,6 +31,8 @@ class World:
 		self.coins = pygame.sprite.Group()
 		self.power_ups = pygame.sprite.Group()
 		self.lucky_blocks = pygame.sprite.Group()
+		self.goombas = pygame.sprite.Group()
+		self.koopas = pygame.sprite.Group()
 
 		for row_index, row in enumerate(layout):
 			for col_index, cell in enumerate(row):
@@ -54,6 +58,12 @@ class World:
 				elif cell == "L":
 					lucky_block = LuckyBlock((x, y), tile_size)
 					self.lucky_blocks.add(lucky_block)
+				elif cell == "k":
+					koopa = Koopa((x, y), tile_size)
+					self.koopas.add(koopa)
+				elif cell == "G":
+					goomba = Goomba((x, y), tile_size)
+					self.goombas.add(goomba)
 
 	# world scroll when the player is walking towards left/right
 	def _scroll_x(self):
@@ -245,7 +255,15 @@ class World:
 				player.eat_mushroom()
 				sprite.kill()
 
+	def _handle_vertical_collision_with_enemies(self):
+		pass
 
+	def _handle_horizontal_collision_with_enemies(self):
+		pass
+
+	def _handle_collisions_with_enemies(self):
+		self._handle_vertical_collision_with_enemies()
+		self._handle_horizontal_collision_with_enemies()
 
 	# updating the game world from all changes commited
 	def update(self, player_event):

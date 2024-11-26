@@ -18,4 +18,6 @@ WIDTH, HEIGHT = 1000, len(world_map) * tile_size
 c - coin
 g - power up (grzyb)
 L - lucky block
+G - Goomba
+k - koopa
 """
