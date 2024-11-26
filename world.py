@@ -72,8 +72,10 @@ class World:
 			player.speed = 3
 
 	# add gravity for player to fall
-	def _apply_gravity(self, player):
-		player.direction.y += self.gravity
+	def _apply_gravity(self, player, gravity = 0.0):
+		if not gravity:
+			gravity = self.gravity
+		player.direction.y += gravity
 		player.rect.y += player.direction.y
 
 	# prevents player to pass through objects horizontally
@@ -93,6 +95,7 @@ class World:
 					player.rect.right = sprite.rect.left
 					player.on_right = True
 					self.current_x = player.rect.right
+
 		for sprite in self.lucky_blocks.sprites():
 			if sprite.rect.colliderect(player.rect):
 				# checks if moving towards left
@@ -105,6 +108,40 @@ class World:
 					player.rect.right = sprite.rect.left
 					player.on_right = True
 					self.current_x = player.rect.right
+		if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+			player.on_left = False
+		if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+			player.on_right = False
+
+
+	def _horizontal_npc_movement_collision(self,player):
+		player.rect.x += player.direction.x * player.speed
+
+		for sprite in self.tiles.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+				if player.direction.x < 0:
+					player.rect.left = sprite.rect.right
+					player.on_left = True
+					player.direction *= -1
+				# checks if moving towards right
+				elif player.direction.x > 0:
+					player.rect.right = sprite.rect.left
+					player.on_right = True
+					player.direction *= -1
+
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+				if player.direction.x < 0:
+					player.rect.left = sprite.rect.right
+					player.on_left = True
+					player.direction *= -1
+				# checks if moving towards right
+				elif player.direction.x > 0:
+					player.rect.right = sprite.rect.left
+					player.on_right = True
+					player.direction *= -1
 		if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
 			player.on_left = False
 		if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
@@ -129,6 +166,7 @@ class World:
 					player.on_ceiling = True
 					if player.super_mario:
 						sprite.kill()
+
 		for sprite in self.lucky_blocks.sprites():
 			if sprite.rect.colliderect(player.rect):
 				# checks if moving towards bottom
@@ -142,6 +180,39 @@ class World:
 					player.direction.y = 0
 					player.on_ceiling = True
 					sprite.hit(self.power_ups)
+		if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+			player.on_ground = False
+		if player.on_ceiling and player.direction.y > 0:
+			player.on_ceiling = False
+
+	def _vertical_npc_movement_collision(self,player):
+		self._apply_gravity(player,12.0)
+
+		for sprite in self.tiles.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					player.rect.bottom = sprite.rect.top
+					player.direction.y = 0
+					player.on_ground = True
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					player.rect.top = sprite.rect.bottom
+					player.direction.y = 0
+					player.on_ceiling = True
+
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					player.rect.bottom = sprite.rect.top
+					player.direction.y = 0
+					player.on_ground = True
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					player.rect.top = sprite.rect.bottom
+					player.direction.y = 0
+					player.on_ceiling = True
 		if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
 			player.on_ground = False
 		if player.on_ceiling and player.direction.y > 0:
@@ -213,5 +284,10 @@ class World:
 		self.player.update(player_event)
 		self.game.show_life(self.player.sprite)
 		self.player.draw(self.screen)
+
+		# for npcs
+		for sprite in self.power_ups.sprites():
+			self._horizontal_npc_movement_collision(sprite)
+			self._vertical_npc_movement_collision(sprite)
 
 		self.game.game_state(self.player.sprite, self.goal.sprite)

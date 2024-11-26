@@ -3,11 +3,11 @@ world_map = [
 	'                                                                  ',
 	'                t  t                                              ',
 	'        X    xXXXXXXXXXs                   XX   X                 ',
-	'  XXX       X         XX                XXXX tt XX                ',
-	' LX XX    c                                 XXXXX                 ',
+	' X   X      X         XX                XXXX tt XX                ',
+	' XLXXX    c                                 XXXXX                 ',
 	'          Xt    t c         t  t   X                            G ',
-	'     c  XXXXXX  XXXXs    XXXXXXXXXXX  XX              tt t     XXX',
-	' P   XX  X XX X  X XXXt     X XX  XX  XXX  XXXXXXXXs  XXXXXX      ',
+	'      c XXXXXX  XXXXs    XXXXXXXXXXX  XX              tt t     XXX',
+	' P    X  X XX X  X XXXt     X XX  XX  XXX  XXXXXXXXs  XXXXXX      ',
 	'XXXXXXX  X  X X  X  XXXXXXXXX XX  XX  XXX  XX XX XXXXXXX  X       ',
 ]
 
