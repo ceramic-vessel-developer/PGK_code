@@ -1,6 +1,8 @@
 import pygame
 
+from LuckyBlock import LuckyBlock
 from coin import Coin
+from power_up import PowerUp
 from settings import tile_size, WIDTH
 from tile import Tile
 from trap import Trap
@@ -15,7 +17,7 @@ class World:
 		self._setup_world(world_data)
 		self.world_shift = 0
 		self.current_x = 0
-		self.gravity = 1.0
+		self.gravity = 0.7
 		self.game = Game(self.screen)
 
 	# generates the world
@@ -25,6 +27,8 @@ class World:
 		self.player = pygame.sprite.GroupSingle()
 		self.goal = pygame.sprite.GroupSingle()
 		self.coins = pygame.sprite.Group()
+		self.power_ups = pygame.sprite.Group()
+		self.lucky_blocks = pygame.sprite.Group()
 
 		for row_index, row in enumerate(layout):
 			for col_index, cell in enumerate(row):
@@ -44,6 +48,12 @@ class World:
 				elif cell == "c":
 					coin_sprite = Coin((x, y), tile_size)
 					self.coins.add(coin_sprite)
+				elif cell == "g":
+					power_up_sprite = PowerUp((x, y), tile_size)
+					self.power_ups.add(power_up_sprite)
+				elif cell == "L":
+					lucky_block = LuckyBlock((x, y), tile_size)
+					self.lucky_blocks.add(lucky_block)
 
 	# world scroll when the player is walking towards left/right
 	def _scroll_x(self):
@@ -62,8 +72,10 @@ class World:
 			player.speed = 3
 
 	# add gravity for player to fall
-	def _apply_gravity(self, player):
-		player.direction.y += self.gravity
+	def _apply_gravity(self, player, gravity = 0.0):
+		if not gravity:
+			gravity = self.gravity
+		player.direction.y += gravity
 		player.rect.y += player.direction.y
 
 	# prevents player to pass through objects horizontally
@@ -83,6 +95,53 @@ class World:
 					player.rect.right = sprite.rect.left
 					player.on_right = True
 					self.current_x = player.rect.right
+
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+				if player.direction.x < 0:
+					player.rect.left = sprite.rect.right
+					player.on_left = True
+					self.current_x = player.rect.left
+				# checks if moving towards right
+				elif player.direction.x > 0:
+					player.rect.right = sprite.rect.left
+					player.on_right = True
+					self.current_x = player.rect.right
+		if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
+			player.on_left = False
+		if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
+			player.on_right = False
+
+
+	def _horizontal_npc_movement_collision(self,player):
+		player.rect.x += player.direction.x * player.speed
+
+		for sprite in self.tiles.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+				if player.direction.x < 0:
+					player.rect.left = sprite.rect.right
+					player.on_left = True
+					player.direction *= -1
+				# checks if moving towards right
+				elif player.direction.x > 0:
+					player.rect.right = sprite.rect.left
+					player.on_right = True
+					player.direction *= -1
+
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+				if player.direction.x < 0:
+					player.rect.left = sprite.rect.right
+					player.on_left = True
+					player.direction *= -1
+				# checks if moving towards right
+				elif player.direction.x > 0:
+					player.rect.right = sprite.rect.left
+					player.on_right = True
+					player.direction *= -1
 		if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
 			player.on_left = False
 		if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
@@ -94,6 +153,55 @@ class World:
 		self._apply_gravity(player)
 
 		for sprite in self.tiles.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					player.rect.bottom = sprite.rect.top
+					player.direction.y = 0
+					player.on_ground = True
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					player.rect.top = sprite.rect.bottom
+					player.direction.y = 0
+					player.on_ceiling = True
+					if player.super_mario:
+						sprite.kill()
+
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					player.rect.bottom = sprite.rect.top
+					player.direction.y = 0
+					player.on_ground = True
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					player.rect.top = sprite.rect.bottom
+					player.direction.y = 0
+					player.on_ceiling = True
+					sprite.hit(self.power_ups)
+		if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
+			player.on_ground = False
+		if player.on_ceiling and player.direction.y > 0:
+			player.on_ceiling = False
+
+	def _vertical_npc_movement_collision(self,player):
+		self._apply_gravity(player,12.0)
+
+		for sprite in self.tiles.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					player.rect.bottom = sprite.rect.top
+					player.direction.y = 0
+					player.on_ground = True
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					player.rect.top = sprite.rect.bottom
+					player.direction.y = 0
+					player.on_ceiling = True
+
+		for sprite in self.lucky_blocks.sprites():
 			if sprite.rect.colliderect(player.rect):
 				# checks if moving towards bottom
 				if player.direction.y > 0:
@@ -120,7 +228,7 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x > 0 or player.direction.y > 0:
 					player.rect.x -= tile_size
-				player.life -= 1
+				player.hit()
 
 	def _handle_coins(self):
 		player = self.player.sprite
@@ -128,11 +236,15 @@ class World:
 		for sprite in self.coins.sprites():
 			if sprite.rect.colliderect(player.rect):
 				sprite.kill()
-				# if player.direction.x < 0 or player.direction.y > 0:
-				# 	player.rect.x += tile_size
-				# elif player.direction.x > 0 or player.direction.y > 0:
-				# 	player.rect.x -= tile_size
-				# player.life -= 1
+
+	def _handle_power_ups(self):
+		player = self.player.sprite
+
+		for sprite in self.power_ups.sprites():
+			if sprite.rect.colliderect(player.rect):
+				player.eat_mushroom()
+				sprite.kill()
+
 
 
 	# updating the game world from all changes commited
@@ -149,9 +261,17 @@ class World:
 		self.coins.update(self.world_shift)
 		self.coins.draw(self.screen)
 
+		# for power ups
+		self.power_ups.update(self.world_shift)
+		self.power_ups.draw(self.screen)
+
 		# for goal
 		self.goal.update(self.world_shift)
 		self.goal.draw(self.screen)
+
+		# for lucky blocks
+		self.lucky_blocks.update(self.world_shift)
+		self.lucky_blocks.draw(self.screen)
 
 		self._scroll_x()
 
@@ -160,8 +280,14 @@ class World:
 		self._vertical_movement_collision()
 		self._handle_traps()
 		self._handle_coins()
+		self._handle_power_ups()
 		self.player.update(player_event)
 		self.game.show_life(self.player.sprite)
 		self.player.draw(self.screen)
+
+		# for npcs
+		for sprite in self.power_ups.sprites():
+			self._horizontal_npc_movement_collision(sprite)
+			self._vertical_npc_movement_collision(sprite)
 
 		self.game.game_state(self.player.sprite, self.goal.sprite)
