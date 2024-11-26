@@ -19,6 +19,7 @@ class Player(pygame.sprite.Sprite):
 
 		# player status
 		self.life = 5
+		self.score = 0
 		self.super_mario = False
 		self.game_over = False
 		self.win = False

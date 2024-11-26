@@ -24,9 +24,18 @@ class Game:
 
 	# checks if the game is over or not, and if win or lose
 	def game_state(self, player, goal):
+		x, y, w, h = goal.rect
 		if player.life <= 0 or player.rect.y >= HEIGHT:
 			self._game_lose(player)
 		elif player.rect.colliderect(goal.rect):
+			if player.status != "win":
+				if player.rect.clipline((x,y),(x+w,y)):
+					player.score += 100
+				elif player.rect.clipline((x,y- h//3),(x+w,y-h//3)):
+					player.score += 50
+				else:
+					player.score += 20
+
 			self._game_win(player)
 		else:
 			None
@@ -41,3 +50,7 @@ class Game:
 		for life in range(player.life):
 			indent += life_size
 			self.screen.blit(life_image, (indent, life_size))
+	
+	def show_score(self, player):
+		message = self.font.render(str(player.score), True, self.message_color)
+		self.screen.blit(message,(WIDTH - WIDTH // 7, 0))

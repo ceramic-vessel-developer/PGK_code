@@ -235,6 +235,7 @@ class World:
 
 		for sprite in self.coins.sprites():
 			if sprite.rect.colliderect(player.rect):
+				player.score += 10
 				sprite.kill()
 
 	def _handle_power_ups(self):
@@ -283,6 +284,7 @@ class World:
 		self._handle_power_ups()
 		self.player.update(player_event)
 		self.game.show_life(self.player.sprite)
+		self.game.show_score(self.player.sprite)
 		self.player.draw(self.screen)
 
 		# for npcs
