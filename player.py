@@ -10,6 +10,7 @@ class Player(pygame.sprite.Sprite):
 		self.image = self.animations["idle"][self.frame_index]
 		self.rect = self.image.get_rect(topleft = pos)
 		self.mask = pygame.mask.from_surface(self.image)
+		self.size = (35, 50)
 
 		# player movement
 		self.direction = pygame.math.Vector2(0, 0)
@@ -18,6 +19,7 @@ class Player(pygame.sprite.Sprite):
 
 		# player status
 		self.life = 5
+		self.super_mario = False
 		self.game_over = False
 		self.win = False
 		self.status = "idle"
@@ -51,7 +53,7 @@ class Player(pygame.sprite.Sprite):
 		if self.frame_index >= len(animation):
 			self.frame_index = 0
 		image = animation[int(self.frame_index)]
-		image = pygame.transform.scale(image, (35, 50))
+		image = pygame.transform.scale(image, self.size)
 		if self.facing_right:
 			self.image = image
 		else:
@@ -97,6 +99,23 @@ class Player(pygame.sprite.Sprite):
 			self.status = "walk"
 		else:
 			self.status = "idle"
+
+	def _handle_size_change(self):
+		if self.super_mario:
+			self.size = (42, 60)
+		else:
+			self.size = (35, 50)
+
+	def eat_mushroom(self):
+		self.super_mario = True
+		self._handle_size_change()
+
+	def hit(self):
+		if self.super_mario:
+			self.super_mario = False
+			self._handle_size_change()
+		else:
+			self.life -= 1
 
 	# update the player's state
 	def update(self, player_event):
