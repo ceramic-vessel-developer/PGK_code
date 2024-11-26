@@ -1,5 +1,6 @@
 import pygame
 
+from LuckyBlock import LuckyBlock
 from coin import Coin
 from power_up import PowerUp
 from settings import tile_size, WIDTH
@@ -27,6 +28,7 @@ class World:
 		self.goal = pygame.sprite.GroupSingle()
 		self.coins = pygame.sprite.Group()
 		self.power_ups = pygame.sprite.Group()
+		self.lucky_blocks = pygame.sprite.Group()
 
 		for row_index, row in enumerate(layout):
 			for col_index, cell in enumerate(row):
@@ -49,6 +51,9 @@ class World:
 				elif cell == "g":
 					power_up_sprite = PowerUp((x, y), tile_size)
 					self.power_ups.add(power_up_sprite)
+				elif cell == "L":
+					lucky_block = LuckyBlock((x, y), tile_size)
+					self.lucky_blocks.add(lucky_block)
 
 	# world scroll when the player is walking towards left/right
 	def _scroll_x(self):
@@ -88,6 +93,18 @@ class World:
 					player.rect.right = sprite.rect.left
 					player.on_right = True
 					self.current_x = player.rect.right
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards left
+				if player.direction.x < 0:
+					player.rect.left = sprite.rect.right
+					player.on_left = True
+					self.current_x = player.rect.left
+				# checks if moving towards right
+				elif player.direction.x > 0:
+					player.rect.right = sprite.rect.left
+					player.on_right = True
+					self.current_x = player.rect.right
 		if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
 			player.on_left = False
 		if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
@@ -112,6 +129,19 @@ class World:
 					player.on_ceiling = True
 					if player.super_mario:
 						sprite.kill()
+		for sprite in self.lucky_blocks.sprites():
+			if sprite.rect.colliderect(player.rect):
+				# checks if moving towards bottom
+				if player.direction.y > 0:
+					player.rect.bottom = sprite.rect.top
+					player.direction.y = 0
+					player.on_ground = True
+				# checks if moving towards up
+				elif player.direction.y < 0:
+					player.rect.top = sprite.rect.bottom
+					player.direction.y = 0
+					player.on_ceiling = True
+					sprite.hit(self.power_ups)
 		if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
 			player.on_ground = False
 		if player.on_ceiling and player.direction.y > 0:
@@ -167,6 +197,10 @@ class World:
 		# for goal
 		self.goal.update(self.world_shift)
 		self.goal.draw(self.screen)
+
+		# for lucky blocks
+		self.lucky_blocks.update(self.world_shift)
+		self.lucky_blocks.draw(self.screen)
 
 		self._scroll_x()
 
