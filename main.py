@@ -33,6 +33,18 @@ class Platformer:
 						self.player_event = "right"
 					if event.key == pygame.K_SPACE:
 						self.player_event = "space"
+					if event.key == pygame.K_1:
+						self.player_event = "build"
+					if event.key == pygame.K_0:
+						self.player_event = "build_disable"
+					if event.key == pygame.K_w:
+						self.player_event = "build_up"
+					if event.key == pygame.K_a:
+						self.player_event = "build_left"
+					if event.key == pygame.K_s:
+						self.player_event = "build_down"
+					if event.key == pygame.K_d:
+						self.player_event = "build_right"
 				elif event.type == pygame.KEYUP:
 					self.player_event = False
 
