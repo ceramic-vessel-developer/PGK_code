@@ -177,19 +177,19 @@ class World:
 					if player.super_mario:
 						sprite.kill()
 
-		for sprite in self.lucky_blocks.sprites():
-			if sprite.rect.colliderect(player.rect):
+		for l_sprite in self.lucky_blocks.sprites():
+			if l_sprite.rect.colliderect(player.rect):
 				# checks if moving towards bottom
 				if player.direction.y > 0:
-					player.rect.bottom = sprite.rect.top
+					player.rect.bottom = l_sprite.rect.top
 					player.direction.y = 0
 					player.on_ground = True
 				# checks if moving towards up
 				elif player.direction.y < 0:
-					player.rect.top = sprite.rect.bottom
+					player.rect.top = l_sprite.rect.bottom
 					player.direction.y = 0
 					player.on_ceiling = True
-					sprite.hit(self.power_ups)
+					l_sprite.hit(self.power_ups)
 		if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
 			player.on_ground = False
 		if player.on_ceiling and player.direction.y > 0:
@@ -401,7 +401,7 @@ class World:
 		self._handle_coins()
 		self._handle_power_ups()
 		self._handle_shell_collision()
-		self.player.update(player_event)
+		self.player.update(player_event,self.tiles,self.lucky_blocks)
 		self.game.show_life(self.player.sprite)
 		self.game.show_score(self.player.sprite)
 		self.player.draw(self.screen)
