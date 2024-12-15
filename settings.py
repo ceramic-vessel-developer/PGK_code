@@ -5,9 +5,9 @@ world_map = [
 	' X   X  X    xXXXXXXXXXs                   XX   X                 ',
 	' X XXX      X         XX                XXXX    XX                ',
 	'  L       c                                 XXXXX                 ',
-	'          X       c                X                            G ',
+	'          X       c            t   X                            G ',
 	'     Xc XXXXXX  XXXXs    XXXXXXXXXXX  XX                       XXX',
-	'XP       X XX X  X XXX      X XX  XX  XXX  XXXXXXXXs  XXXXXX      ',
+	'XP t     X XX X  X XXX      X XX  XX  XXX  XXXXXXXXs  XXXXXX      ',
 	'XXXXXXXXXX  X X  X  XXXXXXXXX XX  XX  XXX  XX XX XXXXXXX  X       ',
 ]
 

@@ -18,6 +18,7 @@ class World:
 		self.world_data = world_data
 		self._setup_world(world_data)
 		self.world_shift = 0
+		self.total_world_shift = 0
 		self.current_x = 0
 		self.gravity = 0.7
 		self.game = Game(self.screen)
@@ -73,13 +74,19 @@ class World:
 
 		if player_x < WIDTH // 3 and direction_x < 0:
 			self.world_shift = 8
+			self.total_world_shift += 8
 			player.speed = 0
 		elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
 			self.world_shift = -8
+			self.total_world_shift += -8
 			player.speed = 0
 		else:
 			self.world_shift = 0
 			player.speed = 3
+
+	def _reset_shift(self):
+		self.world_shift = -self.total_world_shift
+		self.total_world_shift = 0
 
 	# add gravity for player to fall
 	def _apply_gravity(self, player, gravity = 0.0):
@@ -238,7 +245,8 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x > 0 or player.direction.y > 0:
 					player.rect.x -= tile_size
-				player.hit()
+				if player.hit():
+					self._reset_shift()
 
 	def _handle_coins(self):
 		player = self.player.sprite
@@ -255,6 +263,7 @@ class World:
 			if sprite.rect.colliderect(player.rect):
 				player.eat_mushroom()
 				sprite.kill()
+
 	def _handle_shell_collision(self):
 		for koopa in self.koopas.sprites():
 			if koopa.stage == 2:
@@ -280,7 +289,8 @@ class World:
 						player.rect.x += tile_size
 					elif player.direction.x >= 0 and sprite.direction.x <= 0:
 						player.rect.x -= tile_size
-					player.hit()
+					if player.hit():
+						self._reset_shift()
 
 		for sprite in self.koopas.sprites():
 			if sprite.rect.colliderect(player.rect):
@@ -298,7 +308,8 @@ class World:
 						player.rect.x += tile_size
 					elif player.direction.x >= 0 and sprite.direction.x <= 0:
 						player.rect.x -= tile_size
-					player.hit()
+					if player.hit():
+						self._reset_shift()
 		return immune
 		# if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
 		# 	player.on_ground = False
@@ -316,7 +327,8 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x >= 0 and sprite.direction.x <= 0:
 					player.rect.x -= tile_size
-				player.hit()
+				if player.hit():
+					self._reset_shift()
 				# if player.direction.x < 0:
 				# 	player.rect.left = sprite.rect.right
 				# 	player.on_left = True
@@ -335,7 +347,8 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x >= 0 and sprite.direction.x <= 0:
 					player.rect.x -= tile_size
-				player.hit()
+				if player.hit():
+					self._reset_shift()
 			# if player.direction.x < 0:
 			# 	player.rect.left = sprite.rect.right
 			# 	player.on_left = True
@@ -392,6 +405,7 @@ class World:
 
 
 		self._scroll_x()
+
 
 		# for player
 		self._horizontal_movement_collision()

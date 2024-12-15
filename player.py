@@ -11,6 +11,7 @@ class Player(pygame.sprite.Sprite):
 		# self._import_character_assets()
 		# self.frame_index = 0
 		# self.animation_speed = 0.15
+		self.is_hit = None
 		self.size = (35, 50)
 		img_path = 'assets/player/mario.png'
 		self.refresh_image(img_path)
@@ -184,8 +185,13 @@ class Player(pygame.sprite.Sprite):
 		if self.super_mario:
 			self.super_mario = False
 			self._handle_size_change()
+			return False
 		else:
 			self.life -= 1
+			self.is_hit = True
+			self.rect.topleft = self.pos
+
+			return True
 
 	def handle_build(self):
 		self.building = True
@@ -197,7 +203,8 @@ class Player(pygame.sprite.Sprite):
 
 	# update the player's state
 	def update(self, player_event,tiles,blocks):
-		self._get_status()
+		if self.status != "hit":
+			self._get_status()
 		if self.life > 0 and not self.game_over:
 			if player_event == "space" and self.on_ground and not self.building:
 				self._jump()
