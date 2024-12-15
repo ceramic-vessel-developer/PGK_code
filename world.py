@@ -23,6 +23,7 @@ class World:
 		self.gravity = 0.7
 		self.game = Game(self.screen)
 
+
 	# generates the world
 	def _setup_world(self, layout):
 		self.tiles = pygame.sprite.Group()
@@ -437,3 +438,6 @@ class World:
 			self._vertical_npc_movement_collision(sprite)
 
 		self.game.game_state(self.player.sprite, self.goal.sprite)
+
+	def start_screen(self):
+		self.game.start_screen(self.player.sprite)

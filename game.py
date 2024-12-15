@@ -9,6 +9,7 @@ class Game:
 		self.font = pygame.font.Font("assets/fonts/mario2.ttf", 30)
 		self.message_color = pygame.Color("white")
 		self.displays_screen = False
+		self.game_start = True
 
 	# death screen
 	def _game_death(self,player):
@@ -50,7 +51,15 @@ class Game:
 	# checks if the game is over or not, and if win or lose
 	def game_state(self, player, goal):
 		x, y, w, h = goal.rect
-		if player.life <= 0 or player.rect.y >= HEIGHT:
+		if self.game_start:
+			if self.displays_screen:
+				pygame.time.wait(2000)
+				self.displays_screen = not self.displays_screen
+				self.game_start = not self.game_start
+				return
+			self._game_death(player)
+
+		elif player.life <= 0 or player.rect.y >= HEIGHT:
 			self._game_lose(player)
 		elif player.rect.colliderect(goal.rect):
 			if player.status != "win":
@@ -67,6 +76,7 @@ class Game:
 				pygame.time.wait(2000)
 				player.is_hit = not player.is_hit
 				self.displays_screen = False
+				return
 			self._game_death(player)
 
 		else:
@@ -112,3 +122,7 @@ class Game:
 		# Draw the icon and the text on the screen
 		self.screen.blit(icon_image, (icon_x, icon_y))
 		self.screen.blit(text_surface, text_rect)
+
+	def start_screen(self,player):
+		for _ in range(1000000):
+			self._game_death(player)
