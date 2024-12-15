@@ -41,12 +41,48 @@ class Game:
 		message = self.font.render('you lose...', True, self.message_color)
 		self.screen.blit(message,(WIDTH // 3 + 70, 70))
 
+		"""Draw the death screen showing remaining lives and current world."""
+		WHITE = (255, 255, 255)
+		BLACK = (0, 0, 0)
+
+		# TITLE_FONT = pygame.font.Font(pygame.font.match_font('impact'), 80)
+		SUBTITLE_FONT = pygame.font.Font("assets/fonts/mario2.ttf", 50)
+		# Fill the screen with black
+		self.screen.fill(BLACK)
+
+		# Show remaining lives
+		lives_text = SUBTITLE_FONT.render(f"you lose", True, WHITE)
+		lives_rect = lives_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
+		self.screen.blit(lives_text, lives_rect)
+
 	# if player reach the goal
 	def _game_win(self, player):
 		player.game_over = True
 		player.win = True
 		message = self.font.render('You Win!!', True, self.message_color)
 		self.screen.blit(message,(WIDTH // 3, 70))
+
+		"""Draw the death screen showing remaining lives and current world."""
+		WHITE = (255, 255, 255)
+		BLACK = (0, 0, 0)
+
+		# TITLE_FONT = pygame.font.Font(pygame.font.match_font('impact'), 80)
+		SUBTITLE_FONT = pygame.font.Font("assets/fonts/mario2.ttf", 50)
+		INFO_FONT = pygame.font.Font("assets/fonts/mario2.ttf", 30)
+		# Fill the screen with black
+		self.screen.fill(BLACK)
+
+		# Show remaining lives
+		lives_text = SUBTITLE_FONT.render(f"you won", True, WHITE)
+		lives_rect = lives_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
+		self.screen.blit(lives_text, lives_rect)
+
+		# Show current world
+		world_text = INFO_FONT.render(f"score {player.score}", True, WHITE)
+		world_rect = world_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 ))
+		self.screen.blit(world_text, world_rect)
+		self.displays_screen = True
+
 
 	# checks if the game is over or not, and if win or lose
 	def game_state(self, player, goal):
