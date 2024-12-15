@@ -31,6 +31,7 @@ class Player(pygame.sprite.Sprite):
 		# player status
 		self.life = 5
 		self.score = 20
+		self.coins = 0
 		self.super_mario = False
 		self.game_over = False
 		self.win = False
@@ -179,6 +180,7 @@ class Player(pygame.sprite.Sprite):
 
 	def eat_mushroom(self):
 		self.super_mario = True
+		self.score += 100
 		self._handle_size_change()
 
 	def hit(self):

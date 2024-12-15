@@ -41,6 +41,9 @@ class World:
 				if cell == "X":
 					tile = Tile((x, y), tile_size)
 					self.tiles.add(tile)
+				if cell == "F":
+					tile = Tile((x, y), tile_size, is_floor=True)
+					self.tiles.add(tile)
 				elif cell == "t":
 					tile = Trap((x + (tile_size // 4), y + (tile_size // 4)), tile_size // 2)
 					self.traps.add(tile)
@@ -254,6 +257,7 @@ class World:
 		for sprite in self.coins.sprites():
 			if sprite.rect.colliderect(player.rect):
 				player.score += 10
+				player.coins += 1
 				sprite.kill()
 
 	def _handle_power_ups(self):
@@ -418,6 +422,7 @@ class World:
 		self.player.update(player_event,self.tiles,self.lucky_blocks)
 		self.game.show_life(self.player.sprite)
 		self.game.show_score(self.player.sprite)
+		self.game.draw_score(self.player.sprite.coins)
 		self.player.draw(self.screen)
 
 		# for npcs

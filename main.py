@@ -25,7 +25,7 @@ class Platformer:
 	def main(self):
 		self.start_screen()
 
-		self.bg_img = pygame.image.load('assets/terrain/bg.jpg')
+		self.bg_img = pygame.image.load('assets/terrain/mario-background.png')
 		self.bg_img = pygame.transform.scale(self.bg_img, (self.width, self.height))
 
 		"""Game logic"""
