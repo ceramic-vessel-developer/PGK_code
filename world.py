@@ -77,9 +77,18 @@ class World:
 		direction_x = player.direction.x
 
 		if player_x < WIDTH // 3 and direction_x < 0:
-			self.world_shift = 8
-			self.total_world_shift += 8
-			player.speed = 0
+			left_margin = self.total_world_shift + 8
+			if left_margin > 0:
+				self.world_shift = 0
+				self.total_world_shift = 0
+				player.speed = 3
+			else:
+				self.world_shift = 8
+				self.total_world_shift += 8
+				player.speed = 0
+			# self.world_shift = 8
+			# self.total_world_shift += 8
+
 		elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
 			self.world_shift = -8
 			self.total_world_shift += -8
@@ -438,6 +447,7 @@ class World:
 			self._vertical_npc_movement_collision(sprite)
 
 		self.game.game_state(self.player.sprite, self.goal.sprite)
+		print(self.total_world_shift)
 
 	def start_screen(self):
 		self.game.start_screen(self.player.sprite)
