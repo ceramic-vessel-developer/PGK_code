@@ -1,3 +1,5 @@
+from turtledemo.penrose import start
+
 import pygame, sys
 from settings import *
 from world import World
@@ -9,15 +11,22 @@ pygame.display.set_caption("Platformer")
 
 class Platformer:
 	def __init__(self, screen, width, height):
+		self.button_image = None
+		self.bg_img = None
 		self.screen = screen
 		self.clock = pygame.time.Clock()
 		self.player_event = False
+		self.width = width
+		self.height = height
 
-		self.bg_img = pygame.image.load('assets/terrain/bg.jpg')
-		self.bg_img = pygame.transform.scale(self.bg_img, (width, height))
+
+
 
 	def main(self):
+		self.start_screen()
 
+		self.bg_img = pygame.image.load('assets/terrain/bg.jpg')
+		self.bg_img = pygame.transform.scale(self.bg_img, (self.width, self.height))
 
 		"""Game logic"""
 		world = World(world_map, self.screen)
@@ -58,21 +67,22 @@ class Platformer:
 	def draw_start_screen(self):
 		"""Draw the start screen."""
 		# Draw the background image
-		screen.blit(background_image, (0, 0))
+		screen.blit(self.bg_img, (0, 0))
 
-		# Draw the title text
-		title_text = TITLE_FONT.render("Super Mario Game", True, WHITE)
-		title_rect = title_text.get_rect(center=(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 3))
-		screen.blit(title_text, title_rect)
-
-		# Draw the Play button
-		pygame.draw.rect(screen, RED, (button_x, button_y, button_width, button_height))
-		button_text = BUTTON_FONT.render("Play", True, WHITE)
-		button_rect = button_text.get_rect(center=(button_x + button_width // 2, button_y + button_height // 2))
-		screen.blit(button_text, button_rect)
+		# Draw the start button
+		screen.blit(self.button_image, (self.button_x,self.button_y))
 
 	def start_screen(self):
 		"""Handle the start screen logic."""
+
+		self.bg_img = pygame.image.load('assets/start_screen/mario-title.png')
+		self.bg_img = pygame.transform.scale(self.bg_img, (self.width, self.height))
+
+		self.button_image = pygame.image.load("assets/start_screen/mario-title-button.png")  # Replace with your Play button image
+		self.button_image = pygame.transform.scale(self.button_image, (400, 50))
+
+		self.button_x = (self.width - self.button_image.get_width()) // 2
+		self.button_y = (self.height - self.button_image.get_height()) // 2 + 100
 		while True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -80,14 +90,16 @@ class Platformer:
 					sys.exit()
 				elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
 					mouse_x, mouse_y = event.pos
-					if button_x <= mouse_x <= button_x + button_width and button_y <= mouse_y <= button_y + button_height:
+					if self.button_x <= mouse_x <= self.button_x + self.button_image.get_width() and self.button_y <= mouse_y <= self.button_y + self.button_image.get_height():
 						return  # Exit the start screen and start the game
 
 			# Draw the start screen
-			draw_start_screen()
+			self.draw_start_screen()
 
 			# Update the display
-			pygame.display.flip()
+			# pygame.display.flip()
+			pygame.display.update()
+			self.clock.tick(60)
 
 
 if __name__ == "__main__":
