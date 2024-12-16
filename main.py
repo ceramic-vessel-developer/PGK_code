@@ -7,7 +7,7 @@ from world import World
 pygame.init()
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Platformer")
+pygame.display.set_caption("Mario")
 
 class Platformer:
 	def __init__(self, screen, width, height):
@@ -65,7 +65,6 @@ class Platformer:
 			self.clock.tick(60)
 
 	def draw_start_screen(self):
-		"""Draw the start screen."""
 		# Draw the background image
 		screen.blit(self.bg_img, (0, 0))
 
@@ -73,12 +72,10 @@ class Platformer:
 		screen.blit(self.button_image, (self.button_x,self.button_y))
 
 	def start_screen(self):
-		"""Handle the start screen logic."""
-
 		self.bg_img = pygame.image.load('assets/start_screen/mario-title.png')
 		self.bg_img = pygame.transform.scale(self.bg_img, (self.width, self.height))
 
-		self.button_image = pygame.image.load("assets/start_screen/mario-title-button.png")  # Replace with your Play button image
+		self.button_image = pygame.image.load("assets/start_screen/mario-title-button.png")
 		self.button_image = pygame.transform.scale(self.button_image, (400, 50))
 
 		self.button_x = (self.width - self.button_image.get_width()) // 2
@@ -97,7 +94,6 @@ class Platformer:
 			self.draw_start_screen()
 
 			# Update the display
-			# pygame.display.flip()
 			pygame.display.update()
 			self.clock.tick(60)
 

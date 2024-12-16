@@ -293,10 +293,6 @@ class World:
 			if sprite.rect.colliderect(player.rect) and not sprite.killed:
 				# checks if moving towards bottom
 				if player.direction.y > 0:
-					# player.rect.bottom = sprite.rect.top
-					# player.direction.y = 0
-					# player.on_ground = True
-					# pygame.transform.scale(sprite.image, (10, 10))
 					player.direction.y = -10
 					sprite.hit()
 				# checks if moving towards up
@@ -312,9 +308,6 @@ class World:
 			if sprite.rect.colliderect(player.rect):
 				# checks if moving towards bottom
 				if player.direction.y > 0:
-					# player.rect.bottom = sprite.rect.top
-					# player.direction.y = 0
-					# player.on_ground = True
 					sprite.hit()
 					player.direction.y = -10
 					immune = True
@@ -328,10 +321,6 @@ class World:
 					if player.hit():
 						self._reset_shift()
 		return immune
-		# if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
-		# 	player.on_ground = False
-		# if player.on_ceiling and player.direction.y > 0:
-		# 	player.on_ceiling = False
 
 	def _handle_horizontal_collision_with_enemies(self):
 		player = self.player.sprite
@@ -346,15 +335,6 @@ class World:
 					player.rect.x -= tile_size
 				if player.hit():
 					self._reset_shift()
-				# if player.direction.x < 0:
-				# 	player.rect.left = sprite.rect.right
-				# 	player.on_left = True
-				# 	self.current_x = player.rect.left
-				# # checks if moving towards right
-				# elif player.direction.x > 0:
-				# 	player.rect.right = sprite.rect.left
-				# 	player.on_right = True
-				# 	self.current_x = player.rect.right
 
 		for sprite in self.koopas.sprites():
 			if sprite.rect.colliderect(player.rect):
@@ -366,19 +346,6 @@ class World:
 					player.rect.x -= tile_size
 				if player.hit():
 					self._reset_shift()
-			# if player.direction.x < 0:
-			# 	player.rect.left = sprite.rect.right
-			# 	player.on_left = True
-			# 	self.current_x = player.rect.left
-			# # checks if moving towards right
-			# elif player.direction.x > 0:
-			# 	player.rect.right = sprite.rect.left
-			# 	player.on_right = True
-			# 	self.current_x = player.rect.right
-		# if player.on_left and (player.rect.left < self.current_x or player.direction.x >= 0):
-		# 	player.on_left = False
-		# if player.on_right and (player.rect.right > self.current_x or player.direction.x <= 0):
-		# 	player.on_right = False
 
 	def _handle_collisions_with_enemies(self):
 		immune = self._handle_vertical_collision_with_enemies()

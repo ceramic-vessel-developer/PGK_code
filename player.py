@@ -8,9 +8,7 @@ from tile import Tile
 class Player(pygame.sprite.Sprite):
 	def __init__(self, pos):
 		super().__init__()
-		# self._import_character_assets()
-		# self.frame_index = 0
-		# self.animation_speed = 0.15
+
 		self.is_hit = None
 		self.size = (35, 50)
 		img_path = 'assets/player/mario.png'
@@ -50,38 +48,9 @@ class Player(pygame.sprite.Sprite):
 		img_path = path
 		self.image = pygame.image.load(img_path)
 		self.image = pygame.transform.scale(self.image, (self.size[0], self.size[1]))
-	# gets all the image needed for animating specific player action
-	# def _import_character_assets(self):
-	# 	character_path = "assets/player/"
-	# 	self.animations = {
-	# 		"idle": [],
-	# 		"walk": [],
-	# 		"jump": [],
-	# 		"fall": [],
-	# 		"lose": [],
-	# 		"win": []
-	# 	}
-	# 	for animation in self.animations.keys():
-	# 		full_path = character_path + animation
-	# 		self.animations[animation] = import_sprite(full_path)
-	#
-	# # animates the player actions
-	def _animate(self):
-		# animation = self.animations[self.status]
-		#
-		# # loop over frame index
-		# self.frame_index += self.animation_speed
-		# if self.frame_index >= len(animation):
-		# 	self.frame_index = 0
-		# image = animation[int(self.frame_index)]
-		# image = pygame.transform.scale(image, self.size)
-		# if self.facing_right:
-		# 	self.image = image
-		# else:
-		# 	flipped_image = pygame.transform.flip(image, True, False)
-		# 	self.image = flipped_image
 
-		# set the rect
+	def _animate(self):
+
 		if self.on_ground and self.on_right:
 			self.rect = self.image.get_rect(bottomright = self.rect.bottomright)
 		elif self.on_ground and self.on_left:
