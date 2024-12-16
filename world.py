@@ -18,9 +18,11 @@ class World:
 		self.world_data = world_data
 		self._setup_world(world_data)
 		self.world_shift = 0
+		self.total_world_shift = 0
 		self.current_x = 0
 		self.gravity = 0.7
 		self.game = Game(self.screen)
+
 
 	# generates the world
 	def _setup_world(self, layout):
@@ -39,6 +41,9 @@ class World:
 				x, y = col_index * tile_size, row_index * tile_size
 				if cell == "X":
 					tile = Tile((x, y), tile_size)
+					self.tiles.add(tile)
+				if cell == "F":
+					tile = Tile((x, y), tile_size, is_floor=True)
 					self.tiles.add(tile)
 				elif cell == "t":
 					tile = Trap((x + (tile_size // 4), y + (tile_size // 4)), tile_size // 2)
@@ -72,14 +77,29 @@ class World:
 		direction_x = player.direction.x
 
 		if player_x < WIDTH // 3 and direction_x < 0:
-			self.world_shift = 8
-			player.speed = 0
+			left_margin = self.total_world_shift + 8
+			if left_margin > 0:
+				self.world_shift = 0
+				self.total_world_shift = 0
+				player.speed = 3
+			else:
+				self.world_shift = 8
+				self.total_world_shift += 8
+				player.speed = 0
+			# self.world_shift = 8
+			# self.total_world_shift += 8
+
 		elif player_x > WIDTH - (WIDTH // 3) and direction_x > 0:
 			self.world_shift = -8
+			self.total_world_shift += -8
 			player.speed = 0
 		else:
 			self.world_shift = 0
 			player.speed = 3
+
+	def _reset_shift(self):
+		self.world_shift = -self.total_world_shift
+		self.total_world_shift = 0
 
 	# add gravity for player to fall
 	def _apply_gravity(self, player, gravity = 0.0):
@@ -238,7 +258,8 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x > 0 or player.direction.y > 0:
 					player.rect.x -= tile_size
-				player.hit()
+				if player.hit():
+					self._reset_shift()
 
 	def _handle_coins(self):
 		player = self.player.sprite
@@ -246,6 +267,7 @@ class World:
 		for sprite in self.coins.sprites():
 			if sprite.rect.colliderect(player.rect):
 				player.score += 10
+				player.coins += 1
 				sprite.kill()
 
 	def _handle_power_ups(self):
@@ -255,6 +277,7 @@ class World:
 			if sprite.rect.colliderect(player.rect):
 				player.eat_mushroom()
 				sprite.kill()
+
 	def _handle_shell_collision(self):
 		for koopa in self.koopas.sprites():
 			if koopa.stage == 2:
@@ -280,7 +303,8 @@ class World:
 						player.rect.x += tile_size
 					elif player.direction.x >= 0 and sprite.direction.x <= 0:
 						player.rect.x -= tile_size
-					player.hit()
+					if player.hit():
+						self._reset_shift()
 
 		for sprite in self.koopas.sprites():
 			if sprite.rect.colliderect(player.rect):
@@ -298,7 +322,8 @@ class World:
 						player.rect.x += tile_size
 					elif player.direction.x >= 0 and sprite.direction.x <= 0:
 						player.rect.x -= tile_size
-					player.hit()
+					if player.hit():
+						self._reset_shift()
 		return immune
 		# if player.on_ground and player.direction.y < 0 or player.direction.y > 1:
 		# 	player.on_ground = False
@@ -316,7 +341,8 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x >= 0 and sprite.direction.x <= 0:
 					player.rect.x -= tile_size
-				player.hit()
+				if player.hit():
+					self._reset_shift()
 				# if player.direction.x < 0:
 				# 	player.rect.left = sprite.rect.right
 				# 	player.on_left = True
@@ -335,7 +361,8 @@ class World:
 					player.rect.x += tile_size
 				elif player.direction.x >= 0 and sprite.direction.x <= 0:
 					player.rect.x -= tile_size
-				player.hit()
+				if player.hit():
+					self._reset_shift()
 			# if player.direction.x < 0:
 			# 	player.rect.left = sprite.rect.right
 			# 	player.on_left = True
@@ -393,6 +420,7 @@ class World:
 
 		self._scroll_x()
 
+
 		# for player
 		self._horizontal_movement_collision()
 		self._vertical_movement_collision()
@@ -404,6 +432,7 @@ class World:
 		self.player.update(player_event,self.tiles,self.lucky_blocks)
 		self.game.show_life(self.player.sprite)
 		self.game.show_score(self.player.sprite)
+		self.game.draw_score(self.player.sprite.coins)
 		self.player.draw(self.screen)
 
 		# for npcs
@@ -418,3 +447,7 @@ class World:
 			self._vertical_npc_movement_collision(sprite)
 
 		self.game.game_state(self.player.sprite, self.goal.sprite)
+		print(self.total_world_shift)
+
+	def start_screen(self):
+		self.game.start_screen(self.player.sprite)
