@@ -27,6 +27,10 @@ class Player(pygame.sprite.Sprite):
 		self.direction = pygame.math.Vector2(0, 0)
 		self.speed = 5
 		self.jump_move = -16
+		# Initialize velocity and friction
+		self.velocity_x = 0
+		self.friction = 0.1  # Adjust this value to control how quickly the entity stops
+	
 
 		# player status
 		self.life = 5
@@ -91,30 +95,44 @@ class Player(pygame.sprite.Sprite):
 		elif self.on_ceiling:
 			self.rect = self.image.get_rect(midtop = self.rect.midtop)
 
-	# checks if the player is moving towards left or right or not moving
+	
 	def _get_input(self, player_event, tiles, blocks):
-		if player_event != False:
-			if player_event == "right":
-				self.direction.x = 1
-				self.facing_right = True
-			elif player_event == "left":
-				self.direction.x = -1
-				self.facing_right = False
-		else:
-			self.direction.x = 0
+	    # Update velocity based on player input
+	    if player_event != False:
+	        if player_event == "right":
+	            self.velocity_x = 1  # Move right
+	            self.facing_right = True
+	        elif player_event == "left":
+	            self.velocity_x = -1  # Move left
+	            self.facing_right = False
+	    else:
+	        # Apply friction when no input is given
+	        if self.velocity_x > 0:
+	            self.velocity_x -= self.friction
+	            if self.velocity_x < 0:  # Prevent going negative
+	                self.velocity_x = 0
+	        elif self.velocity_x < 0:
+	            self.velocity_x += self.friction
+	            if self.velocity_x > 0:  # Prevent going positive
+	                self.velocity_x = 0
 
-		if player_event != False and self.building and self.on_ground and not self.built:
-			if player_event == "build_up":
-				self._build_tile((self.rect.x,self.rect.y - tile_size), tiles,blocks)
-			elif player_event == "build_left":
-				self._build_tile((self.rect.x - tile_size,self.rect.y ), tiles,blocks)
-			elif player_event == "build_down":
-				self._build_tile((self.rect.x,self.rect.y), tiles, blocks,True)
-			elif player_event == "build_right":
-				self._build_tile((self.rect.x + tile_size,self.rect.y), tiles,blocks)
+	    # Update the direction based on velocity
+	    self.direction.x = self.velocity_x
 
-		if not player_event:
-			self.built = False
+	    # Building logic remains the same
+	    if player_event != False and self.building and self.on_ground and not self.built:
+	        if player_event == "build_up":
+	            self._build_tile((self.rect.x, self.rect.y - tile_size), tiles, blocks)
+	        elif player_event == "build_left":
+	            self._build_tile((self.rect.x - tile_size, self.rect.y), tiles, blocks)
+	        elif player_event == "build_down":
+	            self._build_tile((self.rect.x, self.rect.y), tiles, blocks, True)
+	        elif player_event == "build_right":
+	            self._build_tile((self.rect.x + tile_size, self.rect.y), tiles, blocks)
+
+	    if not player_event:
+	        self.built = False
+
 
 	def _jump(self):
 		self.direction.y = self.jump_move

@@ -52,7 +52,7 @@ class World:
 					player_sprite = Player((x, y))
 					self.player.add(player_sprite)
 				elif cell == "G":
-					goal_sprite = Goal((x, y), tile_size)
+					goal_sprite = Goal((x, y-2*tile_size), 3*tile_size)
 					self.goal.add(goal_sprite)
 				elif cell == "c":
 					coin_sprite = Coin((x, y), tile_size)
