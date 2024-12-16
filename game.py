@@ -134,29 +134,20 @@ class Game:
 		self.screen.blit(message,(WIDTH - WIDTH // 7, 0))
 
 	def draw_score(self,number, position=(WIDTH - WIDTH // 7 - 150, 0)):
-		"""
-        Draw the icon and text (e.g., {icon} X {number}) at the specified position.
 
-        :param screen: The Pygame screen surface.
-        :param icon_image: The icon image to be displayed.
-        :param font: The Pygame font object for rendering text.
-        :param number: The number to display next to the icon.
-        :param position: A tuple (x, y) specifying the top-left corner of the text.
-        """
-
-		icon_image = pygame.image.load("assets/coin/pngegg.png")  # Replace with your icon image
-		icon_image = pygame.transform.scale(icon_image, (40, 40))  # Resize if needed
-		# Position for the icon
+		# icon_image = pygame.image.load("assets/coin/pngegg.png")  # Replace with your icon image
+		# icon_image = pygame.transform.scale(icon_image, (30, 30))  # Resize if needed
+		# # Position for the icon
 		icon_x, icon_y = position
-
+		#
 		# Render the text "X {number}"
-		text = f"x {number}"
+		text = f"coins x {number}"
 		text_surface = self.font.render(text, True, (255, 255, 255))  # White text
 		text_rect = text_surface.get_rect()
-		text_rect.topleft = (icon_x + icon_image.get_width() + 10, icon_y)  # Add space between icon and text
+		text_rect.topleft = (icon_x - 100, icon_y)  # Add space between icon and text
 
 		# Draw the icon and the text on the screen
-		self.screen.blit(icon_image, (icon_x, icon_y))
+		# self.screen.blit(icon_image, (icon_x, icon_y))
 		self.screen.blit(text_surface, text_rect)
 
 	def start_screen(self,player):
