@@ -205,6 +205,7 @@ class Player(pygame.sprite.Sprite):
 		if self.super_mario:
 			self.super_mario = False
 			self._handle_size_change()
+			self.direction *= -1
 			return False
 		else:
 			self.life -= 1

@@ -1,5 +1,5 @@
 import pygame
-
+import time
 from LuckyBlock import LuckyBlock
 from coin import Coin
 from goomba import Goomba
@@ -296,6 +296,8 @@ class World:
 					# player.rect.bottom = sprite.rect.top
 					# player.direction.y = 0
 					# player.on_ground = True
+					pygame.transform.scale(sprite.image, (tile_size*0.8, 50))
+					player.direction.y = -10
 					sprite.kill()
 				# checks if moving towards up
 				elif player.direction.y < 0:
