@@ -282,23 +282,23 @@ class World:
 		for koopa in self.koopas.sprites():
 			if koopa.stage == 2:
 				for goomba in self.goombas.sprites():
-					if goomba.rect.colliderect(koopa.rect):
-						goomba.kill()
+					if goomba.rect.colliderect(koopa.rect) and not goomba.killed:
+						goomba.hit()
 
 
 	def _handle_vertical_collision_with_enemies(self):
 		immune = False
 		player = self.player.sprite
 		for sprite in self.goombas.sprites():
-			if sprite.rect.colliderect(player.rect):
+			if sprite.rect.colliderect(player.rect) and not sprite.killed:
 				# checks if moving towards bottom
 				if player.direction.y > 0:
 					# player.rect.bottom = sprite.rect.top
 					# player.direction.y = 0
 					# player.on_ground = True
-					pygame.transform.scale(sprite.image, (tile_size*0.8, 50))
+					# pygame.transform.scale(sprite.image, (10, 10))
 					player.direction.y = -10
-					sprite.kill()
+					sprite.hit()
 				# checks if moving towards up
 				elif player.direction.y < 0:
 					if player.direction.x <= 0 and sprite.direction.x >= 0:
@@ -337,7 +337,7 @@ class World:
 		player = self.player.sprite
 
 		for sprite in self.goombas.sprites():
-			if sprite.rect.colliderect(player.rect):
+			if sprite.rect.colliderect(player.rect) and not sprite.killed:
 				# checks if moving towards left
 
 				if player.direction.x <= 0 and sprite.direction.x >= 0:
@@ -443,8 +443,9 @@ class World:
 			self._horizontal_npc_movement_collision(sprite)
 			self._vertical_npc_movement_collision(sprite)
 		for sprite in self.goombas.sprites():
-			self._horizontal_npc_movement_collision(sprite)
-			self._vertical_npc_movement_collision(sprite)
+			if not sprite.killed:
+				self._horizontal_npc_movement_collision(sprite)
+				self._vertical_npc_movement_collision(sprite)
 		for sprite in self.koopas.sprites():
 			self._horizontal_npc_movement_collision(sprite)
 			self._vertical_npc_movement_collision(sprite)
