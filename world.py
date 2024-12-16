@@ -316,6 +316,7 @@ class World:
 					# player.direction.y = 0
 					# player.on_ground = True
 					sprite.hit()
+					player.direction.y = -10
 					immune = True
 					player._jump()
 				# checks if moving towards up
